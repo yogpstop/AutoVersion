@@ -11,6 +11,9 @@ public class AutoVersionPlugin implements Plugin<Project> {
     public void apply(Project project) {
         try {
             VersionObtainer obtainer = new VersionObtainer(project.getRootDir());
+            String versionNameRelease = (String) project.findProperty("versionName");
+            if (versionNameRelease == null || versionNameRelease.length() == 0)
+                versionNameRelease = obtainer.getNameDebug();
             /* {@link com.android.build.gradle.internal.dsl.BaseAppModuleExtension}
                {@link com.android.build.gradle.BaseExtension} */
             Object ext = project.getExtensions().findByName("android");
@@ -31,7 +34,7 @@ public class AutoVersionPlugin implements Plugin<Project> {
                     cExt.getMethod("getBuildTypes").invoke(ext);
             Object release = types.maybeCreate("release");
             release.getClass().getMethod("setVersionNameSuffix", String.class)
-                    .invoke(release, project.property("versionName"));
+                    .invoke(release, versionNameRelease);
             Object debug = types.maybeCreate("debug");
             debug.getClass().getMethod("setVersionNameSuffix", String.class)
                     .invoke(debug, obtainer.getNameDebug());

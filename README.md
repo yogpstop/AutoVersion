@@ -1,5 +1,5 @@
 # Overview
-Auto set android apk versionCode and versionName by git commit count.
+Gradle plugin that set version of Android project by date and Git commit status automatically.
 
 # Getting Started
 
@@ -10,8 +10,23 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.yogpc:auto-version:0.0.1'
+        classpath 'com.yogpc:auto-version:0.0.+'
     }
 }
-apply plugin: 'auto-version'
+```
+and apply following diffs to your `app` project's `build.gradle` file:
+```diff
+ apply plugin: 'com.android.application'
++apply plugin: 'auto-version'
+ 
+ android {
+     defaultConfig {
+-        versionCode 1
+-        versionName "0.0.1"
+     }
+ }
+```
+and add following snippets to `gradle.properties` file:
+```properties
+versionName=0.0.1
 ```

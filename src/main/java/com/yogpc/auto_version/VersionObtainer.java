@@ -6,11 +6,9 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.logging.Logger;
 
 class VersionObtainer {
-    private static final char[] alphabet = "abcdefghijklmnopqrstuvwxyz".toCharArray();
-    private static final char[] decimal = "0123456789".toCharArray();
-
     private final int versionCode;
     private final String versionNameDebug;
 
@@ -38,25 +36,25 @@ class VersionObtainer {
         int l = getLen(count);
         char[] output = new char[(longFormat ? 11 : 5) + l];
         int year = date.getWeekYear();
-        output[0] = decimal[(year / 10) % 10];
-        output[1] = decimal[year % 10];
+        output[0] = (char) ('0' + ((year / 10) % 10));
+        output[1] = (char) ('0' + (year % 10));
         output[2] = 'w';
         int week = date.get(Calendar.WEEK_OF_YEAR);
-        output[3] = decimal[week / 10];
-        output[4] = decimal[week % 10];
+        output[3] = (char) ('0' + (week / 10));
+        output[4] = (char) ('0' + (week % 10));
         for (int i = l; i > 0; i--) {
-            output[4 + i] = alphabet[count % 26];
+            output[4 + i] = (char) ('a' + (count % 26));
             count /= 26;
         }
         if (longFormat) {
-            output[5 + l] = decimal[date.get(Calendar.DAY_OF_WEEK) - 1];
+            output[5 + l] = (char) ('0' + (date.get(Calendar.DAY_OF_WEEK) - 1));
             output[6 + l] = '-';
             int hour = date.get(Calendar.HOUR_OF_DAY);
-            output[7 + l] = decimal[hour / 10];
-            output[8 + l] = decimal[hour % 10];
+            output[7 + l] = (char) ('0' + (hour / 10));
+            output[8 + l] = (char) ('0' + (hour % 10));
             int minute = date.get(Calendar.MINUTE);
-            output[9 + l] = decimal[minute / 10];
-            output[10 + l] = decimal[minute % 10];
+            output[9 + l] = (char) ('0' + (minute / 10));
+            output[10 + l] = (char) ('0' + (minute % 10));
         }
         return new String(output);
     }
@@ -85,7 +83,7 @@ class VersionObtainer {
             }
             repo.close();
         } catch (GitAPIException | IOException e) {
-            e.printStackTrace();
+            Logger.getLogger("AutoVersionPlugin").warning(String.valueOf(e));
         }
         if (buildNumber != null)
             thisWeek--;
