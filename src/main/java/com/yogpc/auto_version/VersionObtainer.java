@@ -88,7 +88,7 @@ class VersionObtainer {
         if (buildNumber != null)
             thisWeek--;
         versionCode = buildNumber != null ? Integer.valueOf(buildNumber) : total;
-        versionNameDebug = format(now, thisWeek, buildNumber != null);
+        versionNameDebug = format(now, thisWeek, buildNumber == null || buildNumber.length() == 0);
     }
     int getCode() {
         return versionCode;
