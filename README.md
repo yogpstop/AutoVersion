@@ -7,7 +7,7 @@ Add following snippets to your root project's `build.gradle` file:
 ```groovy
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.yogpc:auto-version:0.0.+'

@@ -1,22 +1,20 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-    }
-}
-
 apply plugin: 'java'
-apply plugin: 'maven-publish'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+tasks.withType(AbstractCompile)*.options*.encoding = 'UTF-8'
+tasks.withType(GroovyCompile)*.groovyOptions*.encoding = 'UTF-8'
+javadoc {
+    options.charSet = 'UTF-8'
+    options.encoding = 'UTF-8'
+}
 
 group 'com.yogpc'
 version '0.0.3'
 
 repositories {
     google()
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -24,34 +22,62 @@ dependencies {
     compile 'org.eclipse.jgit:org.eclipse.jgit:5.1.3.201810200350-r'
 }
 
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
 task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
     classifier = 'sources'
+    from sourceSets.main.allSource
+}
+artifacts {
+    archives javadocJar, sourcesJar
+}
+signing {
+    sign configurations.archives
 }
 
-publishing {
-    publications {
-        bintray(MavenPublication) {
-            from components.java
-            artifact sourcesJar
-            groupId 'com.yogpc'
-            artifactId 'auto-version'
-            version project.version
-        }
-    }
-}
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-bintray {
-    user = bintrayUser
-    key = bintrayKey
-    publications = ['bintray']
-    pkg {
-        repo = 'maven'
-        name = 'AutoVersion'
-        licenses = ['MIT']
-        vcsUrl = 'https://github.com/yogpstop/AutoVersion.git'
-        version {
-            name = project.version
+            repository(url: "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'Auto Version'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'Gradle plugin that set version of Android project by date and Git commit status automatically.'
+                url 'https://github.com/yogpstop/AutoVersion'
+
+                scm {
+                    connection 'scm:git:https://github.com/yogpstop/AutoVersion.git'
+                    developerConnection 'scm:git:https://github.com/yogpstop/AutoVersion.git'
+                    url 'https://github.com/yogpstop/AutoVersion'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://raw.githubusercontent.com/yogpstop/AutoVersion/master/LICENSE'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'yogpstop'
+                        name 'yogpstop'
+                        email 'git@yogpc.com'
+                    }
+                }
+            }
         }
     }
 }
