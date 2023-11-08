@@ -9,14 +9,14 @@ tasks.withType(GroovyCompile)*.groovyOptions*.encoding = 'UTF-8'
 tasks.withType(Javadoc)*.options*.encoding = 'UTF-8'
 
 group = 'com.yogpc'
-version = '0.0.4'
+version = '0.0.5'
 
 repositories {
     google()
     mavenCentral()
 }
 dependencies {
-    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.5.0.202303070854-r'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r'
 }
 
 java {

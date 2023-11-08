@@ -12,7 +12,7 @@ public class AutoVersionPlugin implements Plugin<Project> {
         try {
             VersionObtainer obtainer = new VersionObtainer(project.getRootDir());
             String versionNameRelease = (String) project.findProperty("versionName");
-            if (versionNameRelease == null || versionNameRelease.length() == 0)
+            if (versionNameRelease == null || versionNameRelease.isEmpty())
                 versionNameRelease = obtainer.getNameDebug();
             /* {@link com.android.build.gradle.internal.dsl.BaseAppModuleExtension}
                {@link com.android.build.gradle.BaseExtension} */

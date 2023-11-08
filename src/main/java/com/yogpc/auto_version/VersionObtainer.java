@@ -59,8 +59,20 @@ class VersionObtainer {
         return new String(output);
     }
 
+    private static boolean empty(String envvar) {
+        String value = System.getenv(envvar);
+        return value == null || value.isEmpty();
+    }
+
     VersionObtainer(File dir) {
-        String buildNumber = System.getenv("BUILD_NUMBER");
+        String buildNumber = null;
+        // Woodpecker, Drone, Jenkins, Github, Gitlab
+        for (String k : new String[] {"CI_PIPELINE_NUMBER", "DRONE_BUILD_NUMBER",
+                "BUILD_NUMBER", "GITHUB_RUN_NUMBER", "CI_PIPELINE_IID"}) {
+            buildNumber = System.getenv(k);
+            if (buildNumber != null)
+                break;
+        }
         Calendar now = Calendar.getInstance();
         Calendar fromC = (Calendar) now.clone(); // 週の開始(inclusive)
         fromC.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -87,8 +99,8 @@ class VersionObtainer {
         }
         if (buildNumber != null)
             thisWeek--;
-        versionCode = buildNumber != null ? Integer.valueOf(buildNumber) : total;
-        versionNameDebug = format(now, thisWeek, buildNumber == null || buildNumber.length() == 0);
+        versionCode = buildNumber != null ? Integer.parseInt(buildNumber) : total;
+        versionNameDebug = format(now, thisWeek, empty("CI") && empty("BUILD_ID"));
     }
     int getCode() {
         return versionCode;
